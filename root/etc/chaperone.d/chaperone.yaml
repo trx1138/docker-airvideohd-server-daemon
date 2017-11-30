@@ -1,0 +1,49 @@
+# Service definitions consumed by Chaperone
+prescript-perms.service: {
+  command: "/bin/sh -c 'chmod 0755 /etc/cont-init.d/pre/*'",
+  type: oneshot,
+  uid: root,
+  gid: root,
+}
+
+acl-config.service: {
+  after: prescript-perms.service,
+  command: "/bin/bash /etc/cont-init.d/pre/20-aclconfig",
+  type: oneshot,
+  uid: root,
+  gid: root,
+}
+
+airvideo-config.service: {
+  after: acl-config.service,
+  command: "/bin/bash /etc/cont-init.d/pre/30-svconfig",
+  type: oneshot,
+  uid: root,
+  gid: root,
+}
+
+dbus-daemon.service: {
+  after: airvideo-config.service,
+  command: "dbus-daemon --system --fork",
+  type: forking,
+  pidfile: /var/run/dbus/pid,
+  uid: root,
+  gid: root,
+}
+
+avahi-daemon.service: {
+  after: dbus-daemon.service,
+  command: "avahi-daemon --daemonize --no-chroot",
+  type: forking,
+  pidfile: /var/run/avahi-daemon/pid,
+  uid: root,
+  gid: root,
+}
+
+airvideo-daemon.service: {
+  after: avahi-daemon.service,
+  command: "/opt/airvideohd/AirVideoServerHD --config=/config/Server.properties",
+  type: simple,
+  stdout: inherit,
+  stderr: inherit,
+}

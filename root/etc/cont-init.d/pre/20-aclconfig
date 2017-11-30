@@ -1,0 +1,23 @@
+#!/bin/bash
+
+function setperms {
+# Sets ownership and permissions on config and AirVideoServerHD additional directories
+# Linted list of relevant folders to be owned by worker user account are added here
+chown -R abc:abc \
+  /config \
+  /defaults \
+  /logs \
+  /media \
+  /opt/airvideohd \
+  /transcode
+
+printf "Info: Default service account permissions have been set\n"
+
+# Linted list of relevant folders to be owned by DBus worker account are added here
+chown messagebus:messagebus \
+  /var/run/dbus
+
+}
+
+# set permissions
+setperms

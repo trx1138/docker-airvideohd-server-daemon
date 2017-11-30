@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Cleanup service PID files from previous container executions
+if [ -e /var/run/dbus/pid ]; then
+  rm -f /var/run/dbus/pid
+fi
+
+if [ -e /var/run/avahi-daemon/pid ]; then
+  rm -f /var/run/avahi-daemon/pid
+fi
+
+# Ensure DBUS has generated a UUID for the container
+dbus-uuidgen --ensure
+sleep 3
+
+# Configure AirVideoServerHD properties from template file
+if [ ! -e /config/Server.properties ]; then
+  cp /defaults/Server.properties /config/Server.properties
+  sed -i -e "s|^portMapping.*|portMapping = false|g" /config/Server.properties
+  sed -i -e "s|^VLCLibraryPath.*|VLCLibraryPath = /usr/lib/x86_64-linux-gnu/|g" /config/Server.properties
+  sed -i -e "s|^#logsPath.*|logsPath = /logs|g" /config/Server.properties
+  sed -i -e "s|^#conversionFolderPath.*|conversionFolderPath = /transcode|g" /config/Server.properties
+  sed -i -e "s|^#\scomputerName.*|computerName = $HOSTNAME|g" /config/Server.properties
+  sed -i -e "s|^#\ssharedFolders1\.d.*|sharedFolders1.displayName = Media|g" /config/Server.properties
+  sed -i -e "s|^#\ssharedFolders1\.p.*|sharedFolders1.path = /media|g" /config/Server.properties
+  sed -i -e "s|^singleUserPassword\s=|singleUserPassword = $AVHSUPASS|g" /config/Server.properties
+  chown abc:abc /config/Server.properties
+fi
+
+#Ensure AirVideoServerHD binary is executable
+chmod +x /opt/airvideohd/AirVideoServerHD
