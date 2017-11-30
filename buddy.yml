@@ -1,0 +1,90 @@
+- pipeline: "Build"
+  trigger_mode: "ON_EVERY_PUSH"
+  ref_name: "*"
+  actions:
+  - action: "Build Docker image"
+    type: "DOCKERFILE"
+    dockerfile_path: "Dockerfile"
+  - action: "Notify Slack on build success"
+    type: "SLACK"
+    content: "[#${execution.id}] ${execution.pipeline.name} execution by <${invoker.html_url}|${invoker.name}>"
+    channel: "C870397DX"
+    channel_name: "devops"
+    attachments:
+    - "{\"fallback\":\"${execution.pipeline.name} execution #${execution.id}\",\"color\":\"good\",\"fields\":[{\"title\":\"Successful execution\",\"value\":\"<${execution.html_url}|Execution #${execution.id} ${execution.comment}>\",\"short\":true},{\"title\":\"Pipeline\",\"value\":\"<${execution.pipeline.html_url}|${execution.pipeline.name}>\",\"short\":true},{\"title\":\"Branch\",\"value\":\"${execution.branch.name}\",\"short\":true},{\"title\":\"Project\",\"value\":\"<${project.html_url}|${project.name}>\",\"short\":true}]}"
+    integration_id: 23062
+  - action: "Notify Slack on build failure"
+    type: "SLACK"
+    trigger_time: "ON_FAILURE"
+    content: "[#${execution.id}] ${execution.pipeline.name} execution by <${invoker.html_url}|${invoker.name}>"
+    channel: "C870397DX"
+    channel_name: "devops"
+    attachments:
+    - "{\"fallback\":\"${execution.pipeline.name} execution #${execution.id}\",\"color\":\"danger\",\"fields\":[{\"title\":\"Failed execution\",\"value\":\"<${execution.html_url}|Execution #${execution.id} ${execution.comment}>\",\"short\":true},{\"title\":\"Pipeline\",\"value\":\"<${execution.pipeline.html_url}|${execution.pipeline.name}>\",\"short\":true},{\"title\":\"Branch\",\"value\":\"${execution.branch.name}\",\"short\":true},{\"title\":\"Project\",\"value\":\"<${project.html_url}|${project.name}>\",\"short\":true}]}"
+    integration_id: 23062
+- pipeline: "Release"
+  trigger_mode: "ON_EVERY_PUSH"
+  ref_name: "master"
+  actions:
+  - action: "Build Docker image"
+    type: "DOCKERFILE"
+    login: "madcatsu"
+    password: "${DOCKER_HUB_PASS}"
+    docker_image_tag: "${CONTAINER_REV},latest"
+    dockerfile_path: "Dockerfile"
+    repository: "madcatsu/airvideohd-server-daemon"
+    build_args:
+    - "VERSION=`cat VERSION`"
+    - "VCS_REF=${execution.to_revision.short_revision}"
+  - action: "Notify Slack on release success"
+    type: "SLACK"
+    content: "[#${execution.id}] ${execution.pipeline.name} execution by <${invoker.html_url}|${invoker.name}>"
+    channel: "C870397DX"
+    channel_name: "devops"
+    attachments:
+    - "{\"fallback\":\"${execution.pipeline.name} execution #${execution.id}\",\"color\":\"good\",\"fields\":[{\"title\":\"Successful execution\",\"value\":\"<${execution.html_url}|Execution #${execution.id} ${execution.comment}>\",\"short\":true},{\"title\":\"Pipeline\",\"value\":\"<${execution.pipeline.html_url}|${execution.pipeline.name}>\",\"short\":true},{\"title\":\"Branch\",\"value\":\"${execution.branch.name}\",\"short\":true},{\"title\":\"Project\",\"value\":\"<${project.html_url}|${project.name}>\",\"short\":true}]}"
+    integration_id: 23062
+  - action: "Notify Slack on release failure"
+    type: "SLACK"
+    trigger_time: "ON_FAILURE"
+    content: "[#${execution.id}] ${execution.pipeline.name} execution by <${invoker.html_url}|${invoker.name}>"
+    channel: "C870397DX"
+    channel_name: "devops"
+    attachments:
+    - "{\"fallback\":\"${execution.pipeline.name} execution #${execution.id}\",\"color\":\"danger\",\"fields\":[{\"title\":\"Failed execution\",\"value\":\"<${execution.html_url}|Execution #${execution.id} ${execution.comment}>\",\"short\":true},{\"title\":\"Pipeline\",\"value\":\"<${execution.pipeline.html_url}|${execution.pipeline.name}>\",\"short\":true},{\"title\":\"Branch\",\"value\":\"${execution.branch.name}\",\"short\":true},{\"title\":\"Project\",\"value\":\"<${project.html_url}|${project.name}>\",\"short\":true}]}"
+    integration_id: 23062
+- pipeline: "Scheduled"
+  trigger_mode: "SCHEDULED"
+  ref_name: "master"
+  start_date: "2017-12-01T03:00:00.000Z"
+  delay: 10080
+  run_always: true
+  auto_clear_cache: true
+  actions:
+  - action: "Build Docker image"
+    type: "DOCKERFILE"
+    login: "madcatsu"
+    password: "${DOCKER_HUB_PASS}"
+    docker_image_tag: "latest"
+    dockerfile_path: "Dockerfile"
+    repository: "madcatsu/airvideohd-server-daemon"
+    build_args:
+    - "VERSION=`cat VERSION`"
+    - "VCS_REF=${execution.to_revision.short_revision}"
+  - action: "Notify Slack on scheduled release success"
+    type: "SLACK"
+    content: "[#${execution.id}] ${execution.pipeline.name} execution by <${invoker.html_url}|${invoker.name}>"
+    channel: "C870397DX"
+    channel_name: "devops"
+    attachments:
+    - "{\"fallback\":\"${execution.pipeline.name} execution #${execution.id}\",\"color\":\"good\",\"fields\":[{\"title\":\"Successful execution\",\"value\":\"<${execution.html_url}|Execution #${execution.id} ${execution.comment}>\",\"short\":true},{\"title\":\"Pipeline\",\"value\":\"<${execution.pipeline.html_url}|${execution.pipeline.name}>\",\"short\":true},{\"title\":\"Branch\",\"value\":\"${execution.branch.name}\",\"short\":true},{\"title\":\"Project\",\"value\":\"<${project.html_url}|${project.name}>\",\"short\":true}]}"
+    integration_id: 23062
+  - action: "Notify Slack on scheduled release failure"
+    type: "SLACK"
+    trigger_time: "ON_FAILURE"
+    content: "[#${execution.id}] ${execution.pipeline.name} execution by <${invoker.html_url}|${invoker.name}>"
+    channel: "C870397DX"
+    channel_name: "devops"
+    attachments:
+    - "{\"fallback\":\"${execution.pipeline.name} execution #${execution.id}\",\"color\":\"danger\",\"fields\":[{\"title\":\"Failed execution\",\"value\":\"<${execution.html_url}|Execution #${execution.id} ${execution.comment}>\",\"short\":true},{\"title\":\"Pipeline\",\"value\":\"<${execution.pipeline.html_url}|${execution.pipeline.name}>\",\"short\":true},{\"title\":\"Branch\",\"value\":\"${execution.branch.name}\",\"short\":true},{\"title\":\"Project\",\"value\":\"<${project.html_url}|${project.name}>\",\"short\":true}]}"
+    integration_id: 23062
