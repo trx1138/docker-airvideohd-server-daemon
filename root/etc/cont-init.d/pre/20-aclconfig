@@ -7,7 +7,6 @@ chown -R abc:abc \
   /config \
   /defaults \
   /logs \
-  /media \
   /opt/airvideohd \
   /transcode
 
