@@ -17,7 +17,7 @@ sleep 3
 if [ ! -e /config/Server.properties ]; then
   cp /defaults/Server.properties /config/Server.properties
   sed -i -e "s|^portMapping.*|portMapping = false|g" /config/Server.properties
-  sed -i -e "s|^VLCLibraryPath.*|VLCLibraryPath = /usr/lib/x86_64-linux-gnu/|g" /config/Server.properties
+  sed -i -e "s|^VLCLibraryPath.*|VLCLibraryPath = /usr/lib/|g" /config/Server.properties
   sed -i -e "s|^#logsPath.*|logsPath = /logs|g" /config/Server.properties
   sed -i -e "s|^#conversionFolderPath.*|conversionFolderPath = /transcode|g" /config/Server.properties
   sed -i -e "s|^#\scomputerName.*|computerName = $HOSTNAME|g" /config/Server.properties
