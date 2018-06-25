@@ -38,7 +38,7 @@ docker run -d --name=<container name> --restart unless-stopped \
 -p 5353:5353/udp \
 -p 45633:45633 \
 -p 45633:45633/udp \
-bdwilson/airvideohd-server-daemon:latest --create-user abc:<UID>:<GID>
+madcatsu/airvideohd-server-daemon:latest --create-user abc:<UID>:<GID>
 ```
 
 Parameters you will need to change are surrounded by `<>` marks. A brief description of each of these and their purpose follows:
