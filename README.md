@@ -38,7 +38,7 @@ docker run -d --name=<container name> --restart unless-stopped \
 -p 5353:5353/udp \
 -p 45633:45633 \
 -p 45633:45633/udp \
-madcatsu/airvideohd-server-daemon:latest --create-user abc:<UID>:<PID>
+madcatsu/airvideohd-server-daemon:latest --create-user abc:<UID>:<GID>
 ```
 
 Parameters you will need to change are surrounded by `<>` marks. A brief description of each of these and their purpose follows:
@@ -209,5 +209,7 @@ Once the container is running, connecting to it from an iOS client is relatively
 
 ## Versions
 
++ **2018/06/23:**
+  * Reverted to debian jessie as AirVideo HD requires vlc 2.x. stretch comes with vlc 3.x. Adjusted AirVideo HD config to account for location of vlc libs. 
 + **2017/09/20:**
   * Container initial release - Replaces legacy version on Docker Hub

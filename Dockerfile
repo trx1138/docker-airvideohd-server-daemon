@@ -1,4 +1,5 @@
-FROM debian:stretch-slim
+# have to use jessie because AirVideoHD requires vlc 2.x, vlc 3 is not supported.
+FROM debian:jessie-slim
 # Build arguments
 ARG VCS_REF
 ARG VERSION
@@ -30,7 +31,7 @@ RUN apt-get update && \
   wget \
   vlc-nox && \
   # Install Chaperone
-    pip3 install --no-cache --upgrade \
+    pip3 install -U --upgrade \
       pip \
       setuptools \
       wheel \
@@ -57,11 +58,8 @@ RUN apt-get update && \
     /tmp/packages/Server.properties \
     /defaults && \
 # Cleanup
-  apt autoremove -y \
-    bsdtar \
-    python3-pip \
-    python3-setuptools \
-    wget && \
+  apt-get clean && \
+  apt-get autoclean && \
   rm -rf \
 	  /tmp/packages \
     /var/lib/apt/lists/*
